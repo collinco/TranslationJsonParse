@@ -1,0 +1,10 @@
+{
+    "ExampleKey" : "ExampleValue",
+    "LongString" : "This is a long string This is a long string",
+    "ShortString" : "This is a shorter string",
+    "DuplicateKey" : "ExampleValue",
+    "DuplicateKey2" : "ExampleValue",
+    "Key1" : "Blah Blah",
+    "Key2" : "Ho Ho Ho",
+    "Key3" : "WOLOLOLO"
+}

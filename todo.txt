@@ -1,0 +1,4 @@
+1. Review JSON lint Messages
+2. Write report to a file
+3. Return value to command line given specific args
+4. Separate steps 2 and 3
