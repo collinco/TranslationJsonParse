@@ -13,37 +13,20 @@ def main():
     import re 
     import collections
 
+    #class imports
+    from classes.steps import Step3
+    from classes.steps import Step1and2
+
     import glob
     import os
 
     from pprint import pprint
 
 
-    os.chdir("your file here")
-    for file in glob.glob("*.js"):
-        print(file)
-
-    with open('common.js','r') as myfile:
-        data=myfile.read().replace('\n','')
-    
-    class Step3:
-        def __init__(self) :
-            self.numberOfOccurences = 0
-            self.filesFoundin = []
-
-    # fix these hideous names
-    wordSearchedinProject = Step3()
-
-    # find all the right thing here?
-    lol = re.findall('isChildOnly', data)
- 
-    wordSearchedinProject.numberOfOccurences += len(lol)
-    wordSearchedinProject.filesFoundin.append('this.file')
-
-
     file = open('testfile.txt','w' )
     
-    JsonData = json.load(open('en.json', encoding='utf8'))
+    #JsonData = json.load(open('en.json', encoding='utf8'))
+    JsonData = json.load(open('exampleJSON.json'))
 
     consumedData = []
 
@@ -66,62 +49,83 @@ def main():
                     arr[j], arr[j+1] = arr[j+1], arr[j]
         return arr
 
+    def step1and2func():
+  
+        wordsList = []
+        total = 0
 
-    class RowRecord:
-        def __init__(self) :
-            self.wordCount = 0
-            self.text = ""
-            self.key = ""
-            self.words = []
+        for key in JsonData:
+            #cast to string otherwise error
+            re.sub('<.*>',' ',str(JsonData[key]))
 
-    start_time = time.time()
-    wordsList = []
-    total = 0
+            # create object to append to list
+            item = Step1and2()
+            item.wordCount = len(str(JsonData[key]).split(' '))
+            item.text = JsonData[key]
+            item.key = key
+            item.words = str(JsonData[key]).split(' ')
 
-    for key in JsonData:
-        #cast to string otherwise error
-        re.sub('<.*>',' ',str(JsonData[key]))
+            consumedData.append(item)
+            wordsList.append(str(JsonData[key]))
+            total += 1
 
-        # create object to append to list
-        item = RowRecord()
-        item.wordCount = len(str(JsonData[key]).split(' '))
-        item.text = JsonData[key]
-        item.key = key
-        item.words = str(JsonData[key]).split(' ')
+        print("Total Number or Key Value Pairs:", total)
 
-        consumedData.append(item)
-        wordsList.append(str(JsonData[key]))
-        total += 1
+        sortedList = bubbleSortByLength(consumedData)
+        print("The Top 5 longest strings are:")
+        counter = 0
+        while(counter < 5):
+            print("  " + sortedList[counter].key) 
+            counter += 1
 
-    print(total)
-    print("--- %s seconds ---" % (time.time() - start_time))
-    print(consumedData[0].wordCount)
+        #insightful comment here
+        WordDupes = collections.Counter(wordsList)
+        WordDupes = dict(WordDupes)
 
-    #x = bubbleSortByLength(consumedData)
-    #print(x[0].key)
+        KeyDupes = {}
 
-    y=collections.Counter(wordsList)
-    f = dict(y)
+        # move this to a generator
+        for key, val in WordDupes.items() :
+            if val >= 2 :
+                KeyDupes[key] = val
 
-    z = {}
-
-    # move this to a generator
-    for key, val in f.items() :
-        if val >= 2 :
-            z[key] = val
-
-    finalDict = {}
+        finalDict = {}
     
-    # move this to a generator
-    #for key, val in z.items() :
-     #   for ele in consumedData :
-      #      if key == ele.text :
-       #         if key in finalDict :
-        #            finalDict[key].append(ele.key)
-         #       else :
-          #          finalDict[key] = [ele.key]
+        # move this to a generator
+        for key, val in KeyDupes.items() :
+            for ele in consumedData :
+                if key == ele.text :
+                    if key in finalDict :
+                        finalDict[key].append(ele.key)
+                    else :
+                        finalDict[key] = [ele.key]
+        
+        print("")
+        print(finalDict)
+
+    def func():
+        os.chdir("your file here")
+        for file in glob.glob("*.js"):
+            print(file)
+
+        with open('common.js','r') as myfile:
+            data = myfile.read().replace('\n','')
+        
+        class Step3:
+            def __init__(self) :
+                self.numberOfOccurences = 0
+                self.filesFoundin = []
+
+        # fix these hideous names
+        wordSearchedinProject = Step3()
+
+        # find all the right thing here?
+        lol = re.findall('isChildOnly', data)
     
-    #print(finalDict)    
+        wordSearchedinProject.numberOfOccurences += len(lol)
+        wordSearchedinProject.filesFoundin.append('this.file')
+
+    step1and2func()
 
 main()
 
