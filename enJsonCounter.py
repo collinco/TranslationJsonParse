@@ -12,6 +12,7 @@ def main():
     import copy
     import re 
     import collections
+    import datetime
 
     #class imports
     from classes.steps import Step3
@@ -23,10 +24,19 @@ def main():
     from pprint import pprint
 
 
-    file = open('testfile.txt','w' )
+    file = open('StatsReport.txt','w' )
+
+    # get this in a function
+    x = str(datetime.datetime.now())
+
+    # TODO add report name (made it from cmd args)
+    file.write("Statistics Report for \n\n")
+    file.write("This report was ran on: " + x + "\n")
+    # TODO get last modified date
+    file.write("The json file read was last updated on: \n")
     
-    #JsonData = json.load(open('en.json', encoding='utf8'))
     JsonData = json.load(open('exampleJSON.json'))
+    # JsonData = json.load(open('exampleJSON.json'))
 
     consumedData = []
 
@@ -69,13 +79,19 @@ def main():
             wordsList.append(str(JsonData[key]))
             total += 1
 
-        print("Total Number or Key Value Pairs:", total)
+        print("running report")
+
+        #use line breaks
+        file.write("Total Number or Key Value Pairs: " + str(total) + '\n\n\n')
+
 
         sortedList = bubbleSortByLength(consumedData)
-        print("The Top 5 longest strings are:")
+
+        file.write("The top 5 longest strings by word count: \n")
+
         counter = 0
         while(counter < 5):
-            print("  " + sortedList[counter].key) 
+            file.write("   " + sortedList[counter].key + " : " + str(sortedList[counter].wordCount) + "\n") 
             counter += 1
 
         #insightful comment here
@@ -100,8 +116,18 @@ def main():
                     else :
                         finalDict[key] = [ele.key]
         
-        print("")
-        print(finalDict)
+        file.write("\n\n")
+        file.write("The following string values are duplicated. Underneath the value are the keys it is found in: \n")
+
+        for ele in finalDict :
+            if (len(finalDict[ele]) > 2) :
+                file.write("   " + ele + " : " + str(len(finalDict[ele])) + "\n")
+                for ele2 in finalDict[ele]:
+                    file.write("      " + ele2 + "\n")
+
+        # use string builder?
+        file.write("\n")
+        file.write("The top 5 duplicated string are: ")
 
     def func():
         os.chdir("your file here")
@@ -127,5 +153,6 @@ def main():
 
     step1and2func()
 
+    print("finished running")
 main()
 
