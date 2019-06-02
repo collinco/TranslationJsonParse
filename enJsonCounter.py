@@ -28,13 +28,13 @@ def main():
     file = open('StatsReport.txt','w' )
 
     # get this in a function
-    x = str(datetime.datetime.now())
+    currentDateTime = str(datetime.datetime.now())
 
     # TODO add report name (made it from cmd args)
     file.write("Statistics Report for \n\n")
-    file.write("This report was ran on: " + x + "\n")
+    file.write("This report was ran on: " + currentDateTime + "\n")
     # TODO get last modified date
-    file.write("The json file read was last updated on: \n")
+    # file.write("The json file read was last updated on: \n")
 
     JsonData = json.load(open('exampleJSON.json', encoding='utf-8'))
     # JsonData = json.load(open('exampleJSON.json'))
@@ -62,33 +62,32 @@ def main():
 
     def step1and2func():
 
+        print("running report")
         wordsList = []
         total = 0
 
+
         for key in JsonData:
 
-            #cast to string otherwise error
-            re.sub('<.*>',' ',str(JsonData[key]))
+            # cast to string otherwise error
+            # print(JsonData[key])
+            # re.sub('<.*>',' ',str(JsonData[key]))
 
-            # create object to append to list
+            # create object and deconstruct
             item = Step1and2()
             item.wordCount = len(str(JsonData[key]).split(' '))
             item.text = JsonData[key]
             item.key = key
             item.words = str(JsonData[key]).split(' ')
 
+            # looping logic
             consumedData.append(item)
             wordsList.append(str(JsonData[key]))
             total += 1
 
-        print("running report")
-
-        #use line breaks
-        file.write("Total Number or Key Value Pairs: " + str(total) + '\n\n\n')
-
-
         sortedList = bubbleSortByLength(consumedData)
 
+        file.write("Total Number or Key Value Pairs: " + str(total) + '\n\n\n')
         file.write("The top 5 longest strings by word count: \n")
 
         counter = 0
@@ -96,20 +95,16 @@ def main():
             file.write("   " + sortedList[counter].key + " : " + str(sortedList[counter].wordCount) + "\n")
             counter += 1
 
-        #insightful comment here
-        WordDupes = collections.Counter(wordsList)
-        WordDupes = dict(WordDupes)
-
+        # count duplicatees
+        WordDupes = dict(collections.Counter(wordsList))
         KeyDupes = {}
+        finalDict = {}
 
-        # move this to a generator
         for key, val in WordDupes.items() :
             if val >= 2 :
                 KeyDupes[key] = val
 
-        finalDict = {}
-
-        # move this to a generator
+        # find all keys that match a dupe string
         for key, val in KeyDupes.items() :
             for ele in consumedData :
                 if key == ele.text :
@@ -121,23 +116,17 @@ def main():
         file.write("\n\n")
         file.write("The following string values are duplicated. Underneath the value are the keys it is found in: \n")
 
-        #This is just printing items that are duplicated (>=2)
+        # This is just printing items that are duplicated (>=2)
         for ele in finalDict :
-            if (len(finalDict[ele]) >= 2) :
-                file.write("   " + ele + " : " + str(len(finalDict[ele])) + "\n")
-                for ele2 in finalDict[ele]:
-                    file.write("      " + ele2 + "\n")
+            file.write("   \"" + ele + "\" : " + str(len(finalDict[ele])) + "\n")
+            for ele2 in finalDict[ele]:
+                file.write("      " + ele2 + "\n")
 
-        # use string builder?
         file.write("\n")
-        file.write("The top 5 duplicated string are: ")
+        # file.write("The top 5 duplicated string are: ")
 
-
-
-    #just going to return files for now and not worry about doing the totalling here as of now
+    # just going to return files for now and not worry about doing the totalling here as of now
     def recursion(filepath, key, ArrayOfFiles, ArrayOfOccurences):
-
-        global someLongVariableToTrackOccurences
 
         if(filepath.is_dir()) :
             for item in filepath.iterdir():
@@ -161,7 +150,7 @@ def main():
         for key in JsonData:
 
             #cast to string otherwise error
-            re.sub('<.*>',' ',str(JsonData[key]))
+            # re.sub('<.*>',' ',str(JsonData[key]))
 
             # create object to append to list
             item = Step1and2()
@@ -178,19 +167,21 @@ def main():
         keysWithoutRef = []
 
         folders = ['test']
+
+        # TODO reuse older consumed data
         for obj in consumedData:
             grandTotal = 0
             ArrayOfOccurences = []
 
-            #sepereate these out to see where they are being used TODO
+            # TODO ArrayOfFiles keeps getting appended to unnecessarily
             for folder in folders:
                 NumInFolder = 0
                 p = Path(folder)
-                x = recursion(p, obj.key, ArrayOfFiles, ArrayOfOccurences)
+                recursion(p, obj.key, ArrayOfFiles, ArrayOfOccurences)
                 for ele in ArrayOfOccurences:
                     grandTotal += ele
                     NumInFolder += ele
-                print("in " + folder + " There were " + str(NumInFolder))
+                # print("in " + folder + " There were " + str(NumInFolder))
 
             print("The key " + obj.key + " appears " + str(grandTotal) + " times")
 
@@ -200,8 +191,8 @@ def main():
         elapsed_time = time.time() - start_time
         print(elapsed_time)
 
-    # step1and2func()
-    # step3()
+    step1and2func()
+    step3()
 
     print("finished running")
 main()
